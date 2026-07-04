@@ -34,6 +34,7 @@ package org.firstinspires.ftc.robotcontroller.internal;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -132,6 +133,8 @@ import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import cn.wch.uartlib.WCHUARTManager;
 
 @SuppressWarnings("WeakerAccess")
 public class FtcRobotControllerActivity extends Activity
@@ -268,6 +271,14 @@ public class FtcRobotControllerActivity extends Activity
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    WCHUARTManager.getInstance().init(getApplication());
+    WCHUARTManager.setDebug(true);
+    //增加0x1a86:0x55D4 并且强制指定类型为CH9102X
+    // WCHUARTManager.addNewHardwareAndChipType(0x1a86,0x55D3, ChipType2.CHIP_CH343GP);
+    //解决GPIO不识别问题
+    // WCHUARTManager.addNewHardwareAndChipType(0x1a86,0x55D8, ChipType2.CHIP_CH9101UH);
+    // WCHUARTManager.addNewHardwareAndChipType(0x1a86,0x55D4,ChipType2.CHIP_CH9102F);
 
     if (enforcePermissionValidator()) {
       return;
@@ -466,6 +477,8 @@ public class FtcRobotControllerActivity extends Activity
   protected void onDestroy() {
     super.onDestroy();
     RobotLog.vv(TAG, "onDestroy()");
+
+    WCHUARTManager.getInstance().close(getApplicationContext());
 
     shutdownRobot();  // Ensure the robot is put away to bed
     if (callback != null) callback.close();
