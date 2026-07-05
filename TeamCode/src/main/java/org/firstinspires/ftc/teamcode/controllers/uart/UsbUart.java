@@ -14,6 +14,7 @@ public class UsbUart {
     public static int TIMEOUT = 100;
     private UsbDevice usedUsbDevice = null;
     private int serialNumber = 0;
+    private SerialParameters serialParameters = null;
     public  UsbUart(ChipType2 chipType) {
         ArrayList<UsbDevice> usbDevices = null;
         try{
@@ -91,7 +92,13 @@ public class UsbUart {
             result = false;
             RobotLog.addGlobalWarningMessage(e.getMessage());
         }
+        if(result){
+            this.serialParameters = serialParameters;
+        }
         return result;
+    }
+    public SerialParameters getSerialParameters(){
+        return serialParameters;
     }
     public boolean isConnected(){
         if(usedUsbDevice == null) return false;
