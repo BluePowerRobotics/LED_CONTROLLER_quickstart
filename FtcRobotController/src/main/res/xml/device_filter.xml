@@ -38,7 +38,28 @@ https://developer.android.com/guide/topics/connectivity/usb/host
 <!-- see also RobotUsbDevice.getUsbIdentifiers() -->
 <resources>
    <usb-device vendor-id="1027" product-id="24597" /> <!-- FT232 Lynx: 0x0403/0x6015 -->
-
+   
+   <!-- WCH devices  -->
+   <usb-device vendor-id="6790" product-id="29987" /> <!--  "CH340" -->
+   <usb-device vendor-id="6790" product-id="29986" /> <!--  "CH340K" -->
+   <usb-device vendor-id="6790" product-id="21778" /> <!--  "CH341A" -->
+   <usb-device vendor-id="6790" product-id="21795" /> <!--  "CH341A" -->
+   <usb-device vendor-id="6790" product-id="21970" /> <!--  "CH342" -->
+   <usb-device vendor-id="4966" product-id="34857" /> <!-- "CH342F_1" -->
+   <usb-device vendor-id="4966" product-id="34864" /> <!-- "CH342F_2" -->
+   <usb-device vendor-id="4966" product-id="34866" /> <!-- "CH342F_3" -->
+   <usb-device vendor-id="6790" product-id="21971" /> <!--  "CH343" -->
+   <usb-device vendor-id="6790" product-id="21973" /> <!-- "CH344" -->
+   <usb-device vendor-id="6790" product-id="21976" /> <!--  "CH9101" -->
+   <usb-device vendor-id="6790" product-id="21972" /> <!--  "CH9102" -->
+   <usb-device vendor-id="6790" product-id="21975" /> <!-- "CH9103" -->
+   <usb-device vendor-id="6790" product-id="21983" /> <!-- "CH9104" -->
+   <usb-device vendor-id="6790" product-id="21974" /> <!--  "CH9143" -->
+   <usb-device vendor-id="6790" product-id="21978" /> <!-- "CH347_model_0" -->
+   <usb-device vendor-id="6790" product-id="21979" /> <!--  "CH347_model_1" -->
+   <usb-device vendor-id="6790" product-id="21980" /> <!--  "CH347_model_2" -->
+   <usb-device vendor-id="6790" product-id="21981" /> <!--  "CH347_model_3" -->
+   
    <!-- cameras -->
    <!-- We don't currently auto-connect to UVC cameras, instead relying
         on the app itself to poll. But we could change that if we wished -->
