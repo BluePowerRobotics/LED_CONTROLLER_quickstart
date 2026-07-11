@@ -18,7 +18,15 @@ import java.util.Map;
 //@Disabled
 @Config
 public class ConceptUsbUart extends LinearOpMode {
+    
+    public static int baudRate = 115200;        // 波特率
+    public static int dataBits = 8;             // 数据位 (5,6,7,8)
+    public static int stopBits = 1;             // 停止位 (1,2)
+    public static int parity = 0;               // 校验位: 0=无, 1=奇, 2=偶
+    public static boolean flowControl = false;  // 流控制
+    public static int serialNumber = 0;         // 使用的串口号
     public static String message = "gDAT:TIME;";
+
     private int selectedIndex = 0;
     private ArrayList<UsbDevice> deviceList = new ArrayList<>();
     private boolean agreementActive = false;
@@ -60,8 +68,15 @@ public class ConceptUsbUart extends LinearOpMode {
 
                 if (gamepad1.y && !deviceList.isEmpty()) {
                     UsbDevice selectedDevice = deviceList.get(selectedIndex);
-                    usbUart = new UsbUart(selectedDevice.getDeviceName(), 0);
-                    agreement = new SimpleUartAgreement(usbUart);
+                    usbUart = new UsbUart(selectedDevice.getDeviceName(), serialNumber);
+                    UsbUart.SerialParameters params = usbUart.getSerialParametersBuilder()
+                            .setBaudRate(baudRate)
+                            .setDataBits(dataBits)
+                            .setStopBits(stopBits)
+                            .setParity(parity)
+                            .setFlowControl(flowControl)
+                            .build();
+                    agreement = new SimpleUartAgreement(usbUart, params);
                     agreementActive = true;
                 }
 
@@ -81,7 +96,6 @@ public class ConceptUsbUart extends LinearOpMode {
                 if (gamepad1.x && agreement != null) {
                     agreement.usbUart.writeData(message.getBytes(StandardCharsets.UTF_8));
                 }
-
 
                 Map<String, List<String>> allValues = agreement != null ? agreement.getAllReceivedValues() : Collections.emptyMap();
                 telemetry.addLine("--- Received Data ---");
