@@ -150,4 +150,12 @@ public class LEDAgreement extends SimpleUartAgreement {
         Integer result = possibleValueNumber.get(valueName);
         return result == null ? 0 : result;
     }
+    public boolean setBaudRate(int baudRate){
+        return usbUart.setSerialParameters(
+                usbUart.getSerialParametersBuilder(
+                        usbUart.getSerialParameters()).
+                        setBaudRate(baudRate).
+                        build()
+        );
+    }
 }

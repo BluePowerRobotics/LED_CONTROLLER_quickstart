@@ -122,10 +122,11 @@ public class LEDController {
         return ledAgreement.sendCommand(LEDAgreement.LEDCommand.getLEDCommand(LEDAgreement.LEDCommand.LEDCommandList.APPLY_SETTINGS));
     }
     public boolean setBaudRate(int r){
-        return ledAgreement.sendCommand(
+        boolean result = ledAgreement.sendCommand(
                 LEDAgreement.LEDCommand.getLEDCommand(LEDAgreement.LEDCommand.LEDCommandList.SET_UART_BAUD_RATE),
                 Integer.toHexString(r)
         );
+        return result && ledAgreement.setBaudRate(r);
     }
 
     public boolean setPortLedNum(int p, int n) {
