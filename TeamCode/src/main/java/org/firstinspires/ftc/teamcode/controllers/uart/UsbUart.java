@@ -83,6 +83,8 @@ public class UsbUart {
         return usbDevices;
     }
     public boolean setSerialParameters(SerialParameters serialParameters){
+        if(usedUsbDevice == null) return false;
+        if(!isConnected()) connect();
         boolean result = true;
         try {
             result = WCHUARTManager.getInstance().setSerialParameter(serialParameters.getUsbDevice(),
