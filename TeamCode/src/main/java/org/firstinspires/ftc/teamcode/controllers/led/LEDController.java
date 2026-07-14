@@ -1,0 +1,212 @@
+package org.firstinspires.ftc.teamcode.controllers.led;
+
+import android.graphics.Color;
+import android.os.Build;
+
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.RobotLog;
+
+public class LEDController {
+    LEDAgreement ledAgreement;
+    public LEDController(){
+        this.ledAgreement = new LEDAgreement();
+    }
+    public static class LEDControllerSettings{
+        private byte globalBrightness  = 0;
+        private byte[] portLedNum = {-64,-64,-64,-64,-64,-64,-64};
+        private int uartBaudRate = 115200;
+        public int getUartBaudRate(){
+            return uartBaudRate;
+        }
+        public int[] getPortLedNum(){
+            int[] portLedNum = {64,64,64,64,64,64,64};
+            for(int index = 0;index<portLedNum.length;index++){
+                portLedNum[index] = this.portLedNum[index]+128;
+            }
+            return portLedNum;
+        }
+        public double getGlobalBrightness(){
+            return (double)(globalBrightness+128)/255;
+        }
+        public String getUartBaudRateHexString(){
+            return String.format("%02x", uartBaudRate);
+        }
+        public String[] getPortLedNumHexStrings(){
+            String[] strings = {"","","","","","",""};
+            for(int index = 0;index<this.portLedNum.length;index++){
+                strings[index] =String.format("%02x",portLedNum[index]+128);
+            }
+            return strings;
+        }
+        public String getPortLedNumHexString(int index){
+            return String.format("%02x",portLedNum[index]+128);
+        }
+        public String getGlobalBrightnessHexString(){
+            return String.format("%02x", globalBrightness+128);
+        }
+        public static LEDControllerSettingsBuilder getLEDControllerSettingsBuilder(){
+            return new LEDControllerSettingsBuilder();
+        }
+        public static class LEDControllerSettingsBuilder {
+            private byte globalBrightness = 0;
+            private byte[] portLedNum = {-64, -64, -64, -64, -64, -64, -64};
+            private int uartBaudRate = 115200;
+
+            private LEDControllerSettingsBuilder() {
+            }
+
+            /**
+             * @param globalBrightness range: 0~1, the max brightness of LEDs on the controller
+             */
+            public LEDControllerSettingsBuilder setGlobalBrightness(double globalBrightness) {
+                globalBrightness = Range.clip(globalBrightness,0,1);
+                this.globalBrightness = (byte)(globalBrightness*255 - 128);
+                return this;
+            }
+
+            /**
+             * @param portLedNum 7 port, max 255 each, max 448 in total, setting to 0 means to disable this port
+             */
+            public LEDControllerSettingsBuilder setPortLedNum(int... portLedNum) {
+                int[] rPLN= new int[portLedNum.length];
+                for(int index = 0;index<this.portLedNum.length&&index<portLedNum.length;index++){
+                    rPLN[index] = Range.clip(portLedNum[index],0,255);
+                    this.portLedNum[index] = (byte) (rPLN[index]-128);
+                }
+                return this;
+            }
+
+            /**
+             * @param portIndex 0~6
+             * @param ledNum  max 255, max 448 in all ports, setting to 0 means to disable this port
+             */
+            public LEDControllerSettingsBuilder setPortLedNum(int portIndex, int ledNum) {
+                if (portIndex >= 0 && portIndex < this.portLedNum.length) {
+                    ledNum = Range.clip(ledNum,0,255);
+                    this.portLedNum[portIndex] = (byte) (ledNum - 128);
+                }
+                return this;
+            }
+
+            /**
+             * @param uartBaudRate default 115200
+             */
+            public LEDControllerSettingsBuilder setUartBaudRate(int uartBaudRate) {
+                this.uartBaudRate = uartBaudRate;
+                return this;
+            }
+
+            /**
+             * build a LEDControllerSettings
+             */
+            public LEDController.LEDControllerSettings build() {
+                LEDController.LEDControllerSettings settings = new LEDController.LEDControllerSettings();
+                settings.globalBrightness = this.globalBrightness;
+                settings.portLedNum = this.portLedNum;
+                settings.uartBaudRate = this.uartBaudRate;
+                return settings;
+            }
+        }
+    }
+    public boolean applySettings(LEDControllerSettings ledControllerSettings){
+        boolean result = true;
+        result = result&&ledAgreement.sendCommand(LEDAgreement.LEDCommand.getLEDCommand(LEDAgreement.LEDCommand.LEDCommandList.SET_GLOBAL_BRIGHTNESS),ledControllerSettings.getGlobalBrightnessHexString());
+        for(int i = 0;i<=6;i++)
+            result = result&&ledAgreement.sendCommand(LEDAgreement.LEDCommand.getLEDCommand(LEDAgreement.LEDCommand.LEDCommandList.SET_PORT_LED_NUMBER),i,ledControllerSettings.getPortLedNumHexString(i));
+        result = result&&ledAgreement.sendCommand(LEDAgreement.LEDCommand.getLEDCommand(LEDAgreement.LEDCommand.LEDCommandList.SET_UART_BAUD_RATE),ledControllerSettings.getUartBaudRateHexString());
+        result = result&&ledAgreement.sendCommand(LEDAgreement.LEDCommand.getLEDCommand(LEDAgreement.LEDCommand.LEDCommandList.APPLY_SETTINGS));
+        return result;
+    }
+    public boolean applySettings(){
+        return ledAgreement.sendCommand(LEDAgreement.LEDCommand.getLEDCommand(LEDAgreement.LEDCommand.LEDCommandList.APPLY_SETTINGS));
+    }
+    public boolean setBaudRate(int r){
+        return ledAgreement.sendCommand(
+                LEDAgreement.LEDCommand.getLEDCommand(LEDAgreement.LEDCommand.LEDCommandList.SET_UART_BAUD_RATE),
+                Integer.toHexString(r)
+        );
+    }
+
+    public boolean setPortLedNum(int p, int n) {
+        if (p < 0 || p > 6) return false;
+        n = Range.clip(n, 0, 255);
+        return ledAgreement.sendCommand(
+                LEDAgreement.LEDCommand.getLEDCommand(LEDAgreement.LEDCommand.LEDCommandList.SET_PORT_LED_NUMBER),
+                p,
+                String.format("%02x", n)
+        );
+    }
+
+    public boolean setGlobalBrightness(double b) {
+        b = Range.clip(b, 0, 1);
+        int brightness = (int) Math.round(b * 255);
+        brightness = Range.clip(brightness, 0, 255);
+        return ledAgreement.sendCommand(
+                LEDAgreement.LEDCommand.getLEDCommand(LEDAgreement.LEDCommand.LEDCommandList.SET_GLOBAL_BRIGHTNESS),
+                String.format("%02x", brightness)
+        );
+    }
+
+    public boolean setPortPattern(int p, RevBlinkinLedDriver.BlinkinPattern pattern) {
+        if (p < 0 || p > 6) return false;
+        int code = pattern.ordinal();
+        return ledAgreement.sendCommand(
+                LEDAgreement.LEDCommand.getLEDCommand(LEDAgreement.LEDCommand.LEDCommandList.SET_PORT_PATTERN),
+                p,
+                String.format("%02x", code)
+        );
+    }
+
+    public boolean setLEDColor(int port, int index, Color color) {
+        if (port < 0 || port > 6) return false;
+        int r = 0, g = 0, b = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            r = (int)(color.red()*255);
+            g = (int)(color.red()*255);
+            b = (int)(color.red()*255);
+        }else{
+            RobotLog.addGlobalWarningMessage("Android SDK version too low! can't use android.graphics.Color");
+        }
+        return ledAgreement.sendCommand(
+                LEDAgreement.LEDCommand.getLEDCommand(LEDAgreement.LEDCommand.LEDCommandList.SET_SINGLE_RGB),
+                port,
+                index,
+                String.format("%02x", r),
+                String.format("%02x", g),
+                String.format("%02x", b)
+        );
+    }
+
+    public boolean setRangeLEDColor(int port, int first, int last, Color color) {
+        if (port < 0 || port > 6) return false;
+        if(first>last){
+            int temp=first;
+            first = last;
+            last  = temp;
+        }else if(first==last){
+            return setLEDColor(port,first,color);
+        }
+        int r = 0, g = 0, b = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            r = (int)(color.red()*255);
+            g = (int)(color.red()*255);
+            b = (int)(color.red()*255);
+        }else{
+            RobotLog.addGlobalWarningMessage("Android SDK version too low! can't use android.graphics.Color");
+        }
+        return ledAgreement.sendCommand(
+                LEDAgreement.LEDCommand.getLEDCommand(LEDAgreement.LEDCommand.LEDCommandList.SET_RANGE_RGB),
+                port,
+                first,
+                last,
+                String.format("%02x", r),
+                String.format("%02x", g),
+                String.format("%02x", b)
+        );
+    }
+
+    public void close(){
+        ledAgreement.close();
+    }
+}

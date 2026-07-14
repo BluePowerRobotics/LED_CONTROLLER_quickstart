@@ -24,6 +24,11 @@ public class LEDAgreement extends SimpleUartAgreement {
     );
     public static int TIMEOUT_MS = 100;
 
+    /**
+     * Note that the path of the same device on the same port changes each time you plug it.
+     * @param devicePath the device path in usbfs file system
+     */
+    @Deprecated
     public LEDAgreement(String devicePath){
         this(LEDAgreement.createUsbUartAndParams(new UsbUart(devicePath)));
         customizeAgreement();
