@@ -222,6 +222,13 @@ public class UsbUart {
     public SerialParameters.Builder getSerialParametersBuilder(){
         return new SerialParameters.Builder(usedUsbDevice, serialNumber);
     }
+    public SerialParameters.Builder getSerialParametersBuilder(SerialParameters params){
+        return getSerialParametersBuilder().setBaudRate(params.baudRate)
+                .setDataBits(params.dataBits)
+                .setFlowControl(params.flowControl)
+                .setParity(params.parity)
+                .setStopBits(params.stopBits);
+    }
     public static class SerialParameters {
         private SerialParameters(Builder builder){
             this.usbDevice=builder.usbDevice;
