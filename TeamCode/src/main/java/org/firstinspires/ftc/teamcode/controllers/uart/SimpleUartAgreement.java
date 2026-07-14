@@ -15,7 +15,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class SimpleUartAgreement {
     protected String[] possibleReceivingMessageTypeAndCode = {"rDAT"};
     protected int generalValueLength = 4;
-    UsbUart usbUart;
+    protected UsbUart usbUart;
     private final ConcurrentLinkedQueue<String> receivedMessages = new ConcurrentLinkedQueue<>();
     private final ConcurrentHashMap<String, CopyOnWriteArrayList<String>> receivedValues = new ConcurrentHashMap<>();
     public List<String> getReceivedValue(String valueName){
