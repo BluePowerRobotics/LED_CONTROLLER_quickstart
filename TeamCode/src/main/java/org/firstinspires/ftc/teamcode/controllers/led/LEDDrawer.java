@@ -203,7 +203,7 @@ public class LEDDrawer {
                 strobe(Color.valueOf(Color.BLUE), ad2, brightness);
                 break;
             case STROBE_GOLD:
-                strobe(Color.valueOf(0xFFD700), ad2, brightness);
+                strobe(Color.valueOf(0xFFFFD700), ad2, brightness);
                 break;
             case STROBE_WHITE:
                 strobe(Color.valueOf(Color.WHITE), ad2, brightness);
@@ -306,27 +306,27 @@ public class LEDDrawer {
                 break;
 
             // ========== SOLID COLORS ==========
-            case HOT_PINK:      fillSolid(Color.valueOf(0xFF69B4), brightness); break;
-            case DARK_RED:      fillSolid(Color.valueOf(0x8B0000), brightness); break;
+            case HOT_PINK:      fillSolid(Color.valueOf(0xFFFF69B4), brightness); break;
+            case DARK_RED:      fillSolid(Color.valueOf(0xFF8B0000), brightness); break;
             case RED:           fillSolid(Color.valueOf(Color.RED), brightness); break;
-            case RED_ORANGE:    fillSolid(Color.valueOf(0xFF4500), brightness); break;
-            case ORANGE:        fillSolid(Color.valueOf(0xFFA500), brightness); break;      // 修正1
-            case GOLD:          fillSolid(Color.valueOf(0xFFD700), brightness); break;
+            case RED_ORANGE:    fillSolid(Color.valueOf(0xFFFF4500), brightness); break;
+            case ORANGE:        fillSolid(Color.valueOf(0xFFFFA500), brightness); break;      // 修正1
+            case GOLD:          fillSolid(Color.valueOf(0xFFFFD700), brightness); break;
             case YELLOW:        fillSolid(Color.valueOf(Color.YELLOW), brightness); break;
-            case LAWN_GREEN:    fillSolid(Color.valueOf(0x7CFC00), brightness); break;
-            case LIME:          fillSolid(Color.valueOf(0x00FF00), brightness); break;
-            case DARK_GREEN:    fillSolid(Color.valueOf(0x006400), brightness); break;
+            case LAWN_GREEN:    fillSolid(Color.valueOf(0xFF7CFC00), brightness); break;
+            case LIME:          fillSolid(Color.valueOf(0xFF00FF00), brightness); break;
+            case DARK_GREEN:    fillSolid(Color.valueOf(0xFF006400), brightness); break;
             case GREEN:         fillSolid(Color.valueOf(Color.GREEN), brightness); break;
-            case BLUE_GREEN:    fillSolid(Color.valueOf(0x00FFFF), brightness); break;
-            case AQUA:          fillSolid(Color.valueOf(0x00FFFF), brightness); break;
-            case SKY_BLUE:      fillSolid(Color.valueOf(0x87CEEB), brightness); break;
-            case DARK_BLUE:     fillSolid(Color.valueOf(0x00008B), brightness); break;
+            case BLUE_GREEN:    fillSolid(Color.valueOf(0xFF00FFFF), brightness); break;
+            case AQUA:          fillSolid(Color.valueOf(0xFF00FFFF), brightness); break;
+            case SKY_BLUE:      fillSolid(Color.valueOf(0xFF87CEEB), brightness); break;
+            case DARK_BLUE:     fillSolid(Color.valueOf(0xFF00008B), brightness); break;
             case BLUE:          fillSolid(Color.valueOf(Color.BLUE), brightness); break;
-            case BLUE_VIOLET:   fillSolid(Color.valueOf(0x8A2BE2), brightness); break;
-            case VIOLET:        fillSolid(Color.valueOf(0xEE82EE), brightness); break;
+            case BLUE_VIOLET:   fillSolid(Color.valueOf(0xFF8A2BE2), brightness); break;
+            case VIOLET:        fillSolid(Color.valueOf(0xFFEE82EE), brightness); break;
             case WHITE:         fillSolid(Color.valueOf(Color.WHITE), brightness); break;
             case GRAY:          fillSolid(Color.valueOf(Color.GRAY), brightness); break;
-            case DARK_GRAY:     fillSolid(Color.valueOf(0x444444), brightness); break;  // 修正2
+            case DARK_GRAY:     fillSolid(Color.valueOf(Color.DKGRAY), brightness); break;  // 修正2
             case BLACK:         fillSolid(Color.valueOf(Color.BLACK), brightness); break;
 
             default:
