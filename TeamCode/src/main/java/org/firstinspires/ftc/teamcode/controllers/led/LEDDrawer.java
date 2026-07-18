@@ -1,10 +1,5 @@
 package org.firstinspires.ftc.teamcode.controllers.led;
 
-import android.graphics.Color;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 
 import java.util.Random;
@@ -13,10 +8,8 @@ import java.util.Random;
  * 模拟 REV Blinkin LED 驱动器的动画绘制器。
  * 支持所有 100 种模式，参数 ad1/ad2/brightness 实时可调。
  */
-@RequiresApi(api = Build.VERSION_CODES.O)
 public class LEDDrawer {
 
-    // ---------- 可配置 ----------
     private final int numLeds;
     private Color[] leds;
     private Color color1 = Color.valueOf(Color.RED);
@@ -44,6 +37,10 @@ public class LEDDrawer {
         this.leds = new Color[numLeds];
         clear();
     }
+    public LEDDrawer(Color[] colors){
+        this.numLeds= colors.length;
+        this.leds = colors.clone();
+    }
 
     public void setColor1(Color c) { this.color1 = c; }
     public void setColor2(Color c) { this.color2 = c; }
@@ -55,6 +52,7 @@ public class LEDDrawer {
 
     // ---------- 主更新接口 ----------
     public void update(RevBlinkinLedDriver.BlinkinPattern pattern, int ad1, int ad2, int brightness) {
+        if (numLeds <= 0) return;
         long now = System.currentTimeMillis();
         if (lastTime == 0) lastTime = now;
         float delta = (now - lastTime) / 1000.0f;
@@ -80,10 +78,10 @@ public class LEDDrawer {
                 break;
             case RAINBOW_WITH_GLITTER:
                 rainbowWithPalette(RAINBOW_PALETTE, ad1, ad2, brightness);
-                addGlitter(80, brightness);
+                addGlitter(map(ad2, 0, 255, 0, 50), brightness);
                 break;
             case CONFETTI:
-                confetti(ad2, brightness);
+                confetti(ad1,ad2, brightness);
                 break;
             case SHOT_RED:
                 shot(Color.valueOf(Color.RED), ad2, brightness);
@@ -290,7 +288,7 @@ public class LEDDrawer {
                 endToEndBlendTwoColor(color1, color2, ad2, brightness);
                 break;
             case CP1_2_END_TO_END_BLEND:
-                endToEndBlendTwoColor(color1, color2, ad2, brightness);
+                endToEndBlendTwoColor(color2, color1, ad2, brightness);
                 break;
             case CP1_2_NO_BLENDING:
                 twoColorNoBlending(color1, color2, brightness);
@@ -310,14 +308,14 @@ public class LEDDrawer {
             case DARK_RED:      fillSolid(Color.valueOf(0xFF8B0000), brightness); break;
             case RED:           fillSolid(Color.valueOf(Color.RED), brightness); break;
             case RED_ORANGE:    fillSolid(Color.valueOf(0xFFFF4500), brightness); break;
-            case ORANGE:        fillSolid(Color.valueOf(0xFFFFA500), brightness); break;      // 修正1
+            case ORANGE:        fillSolid(Color.valueOf(0xFFFFA500), brightness); break;
             case GOLD:          fillSolid(Color.valueOf(0xFFFFD700), brightness); break;
             case YELLOW:        fillSolid(Color.valueOf(Color.YELLOW), brightness); break;
             case LAWN_GREEN:    fillSolid(Color.valueOf(0xFF7CFC00), brightness); break;
             case LIME:          fillSolid(Color.valueOf(0xFF00FF00), brightness); break;
             case DARK_GREEN:    fillSolid(Color.valueOf(0xFF006400), brightness); break;
             case GREEN:         fillSolid(Color.valueOf(Color.GREEN), brightness); break;
-            case BLUE_GREEN:    fillSolid(Color.valueOf(0xFF00FFFF), brightness); break;
+            case BLUE_GREEN:    fillSolid(Color.valueOf(0xFF008080), brightness); break;
             case AQUA:          fillSolid(Color.valueOf(0xFF00FFFF), brightness); break;
             case SKY_BLUE:      fillSolid(Color.valueOf(0xFF87CEEB), brightness); break;
             case DARK_BLUE:     fillSolid(Color.valueOf(0xFF00008B), brightness); break;
@@ -326,7 +324,7 @@ public class LEDDrawer {
             case VIOLET:        fillSolid(Color.valueOf(0xFFEE82EE), brightness); break;
             case WHITE:         fillSolid(Color.valueOf(Color.WHITE), brightness); break;
             case GRAY:          fillSolid(Color.valueOf(Color.GRAY), brightness); break;
-            case DARK_GRAY:     fillSolid(Color.valueOf(Color.DKGRAY), brightness); break;  // 修正2
+            case DARK_GRAY:     fillSolid(Color.valueOf(Color.DKGRAY), brightness); break;
             case BLACK:         fillSolid(Color.valueOf(Color.BLACK), brightness); break;
 
             default:
@@ -372,7 +370,6 @@ public class LEDDrawer {
         );
     }
 
-    // ---- beatsin8 重载（修正3） ----
     private int beatsin8(float bpm, int low, int high) {
         return beatsin8(bpm, low, high, 0, 0);
     }
@@ -384,7 +381,7 @@ public class LEDDrawer {
     private int beatsin8(float bpm, int low, int high, int offset, int phase) {
         float period = 60.0f / bpm;
         float angle = (elapsedSeconds + offset) % period / period * 2 * (float) Math.PI;
-        angle += phase * Math.PI / 180.0f;
+        angle += (float) (phase * Math.PI / 180.0f);
         float sinVal = (float) Math.sin(angle);
         return low + (int) ((sinVal + 1) / 2 * (high - low));
     }
@@ -428,14 +425,19 @@ public class LEDDrawer {
         fillPalette(palette, beat, density, brightness);
     }
 
-    private void confetti(int speed, int brightness) {
-        fadeToBlackBy(speedToDelay(speed) / 2 + 1);
-        int pos = random.nextInt(numLeds);
-        float hue = random.nextFloat() * 360;
-        float sat = 1.0f;
-        float val = brightness / 255f;
-        int argb = Color.HSVToColor(0xFF, new float[]{hue, sat, val});
-        leds[pos] = Color.valueOf(argb);
+    private void confetti(int density, int speed, int brightness) {
+        int fadeAmount = map(speed, 0, 255, 5, 60);
+        fadeToBlackBy(fadeAmount);
+        int count = map(density, 0, 255, 1, numLeds/5.0>1?(int)(numLeds/5.0):1);
+        for (int i = 0; i < count; i++) {
+            int pos = random.nextInt(numLeds);
+            // 随机色相
+            float hue = random.nextFloat() * 360;
+            float sat = 1.0f;
+            float val = brightness / 255f;
+            int argb = Color.HSVToColor(0xFF, new float[]{hue, sat, val});
+            leds[pos] = Color.valueOf(argb);
+        }
     }
 
     private void shot(Color color, int speed, int brightness) {
@@ -585,8 +587,10 @@ public class LEDDrawer {
     }
 
     private void endToEndBlendToBlack(Color color, int speed, int brightness) {
-        endToEndPos = (endToEndPos + 1) % numLeds;
-        fadeToBlackBy(20);
+        int step = map(speed, 0, 255, 1, 5);          // 速度 → 步长 1~5
+        int fadeAmount = map(speed, 0, 255, 10, 60);  // 速度 → 消退量 10~60
+        endToEndPos = (endToEndPos + step) % numLeds;
+        fadeToBlackBy(fadeAmount);
         leds[endToEndPos] = color;
         applyBrightness(leds, brightness);
     }
@@ -647,8 +651,10 @@ public class LEDDrawer {
     }
 
     private void endToEndBlendTwoColor(Color c1, Color c2, int speed, int brightness) {
-        endToEndPos = (endToEndPos + 1) % numLeds;
-        fadeToBlackBy(15);
+        int step = map(speed, 0, 255, 1, 5);
+        int fadeAmount = map(speed, 0, 255, 10, 60);
+        endToEndPos = (endToEndPos + step) % numLeds;
+        fadeToBlackBy(fadeAmount);
         float t = (float) endToEndPos / (numLeds - 1);
         leds[endToEndPos] = blend(c1, c2, t);
         applyBrightness(leds, brightness);
@@ -671,9 +677,7 @@ public class LEDDrawer {
     }
 
     private void colorWavesTwoColor(Color c1, Color c2, int speed, int brightness) {
-        int beat = beatsin8(speedToBeats(speed), 0, 255);
         for (int i = 0; i < numLeds; i++) {
-            // 修正4：使用5参数重载，phase 参数为 i*8
             float t = (float) beatsin8(6, 0, 255, 0, i * 8) / 255f;
             Color c = blend(c1, c2, t);
             int bright = beatsin8(speedToBeats(speed), 128, 255, 0, i * 4);

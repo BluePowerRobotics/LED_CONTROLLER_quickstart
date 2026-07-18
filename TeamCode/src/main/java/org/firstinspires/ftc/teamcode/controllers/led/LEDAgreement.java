@@ -19,7 +19,6 @@ public class LEDAgreement extends SimpleUartAgreement {
             Map.entry("TIME",1),
             Map.entry("GLOBAL_BRIGHTNESS", 1),
             Map.entry("PORT_LED_NUMBER",7),
-            Map.entry("PORT_PATTERN",7),
             Map.entry("LED_RGB",5)
     );
     public static int TIMEOUT_MS = 100;
@@ -42,7 +41,7 @@ public class LEDAgreement extends SimpleUartAgreement {
     }
     private static UsbUartAndParams createUsbUartAndParams(UsbUart usbUart) {
         UsbUart.SerialParameters params = usbUart.getSerialParametersBuilder()
-                .setBaudRate(115200)
+                .setBaudRate(921600)
                 .build();
         return new UsbUartAndParams(usbUart, params);
     }
@@ -70,10 +69,10 @@ public class LEDAgreement extends SimpleUartAgreement {
         }
         public enum LEDCommandList {
             APPLY_SETTINGS('s',"APS",0),
-            SET_UART_BAUD_RATE('s',"UBR",1),
+            //SET_UART_BAUD_RATE('s',"UBR",1),
             SET_GLOBAL_BRIGHTNESS('s',"GBN",1),
             SET_PORT_LED_NUMBER('s',"PLN",2),
-            SET_PORT_PATTERN('s',"PPT",2),
+//            SET_PORT_PATTERN('s',"PPT",2),
             SET_RANGE_RGB('s', "RNG", 6),
             SET_SINGLE_RGB('s', "RGB", 5),
             GET_SETTING('g', "STG", 1),
