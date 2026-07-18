@@ -365,10 +365,9 @@ public class LEDController {
                         if (drawer == null) continue;
                         RevBlinkinLedDriver.BlinkinPattern pattern = currentPatterns[i];
                         if (pattern == null) pattern = RevBlinkinLedDriver.BlinkinPattern.BLACK;
-                        int brightness = (int) (ledControllerSettings.getGlobalBrightness() * 255);
                         drawer.setColor1(getColor1());
                         drawer.setColor2(getColor2());
-                        drawer.update(pattern, getAd1(), getAd2(), brightness);
+                        drawer.update(pattern, getAd1(), getAd2(), 255);
                         Color[] leds = drawer.getLeds();
                         for (int j = 0; j < lockFlags[i].length; j++) {
                             if (!lockFlags[i][j]) colors[i][j] = leds[j];
