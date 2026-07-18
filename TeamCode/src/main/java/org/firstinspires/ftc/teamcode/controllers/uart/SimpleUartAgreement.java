@@ -48,7 +48,7 @@ public class SimpleUartAgreement {
         this.usbUart.setSerialParameters(serialParameters);
         usbUart.registerDataCallback(new SimpleDataCallback());
     }
-    public boolean sendCommand(Command command, Object... args){
+    public synchronized boolean sendCommand(Command command, Object... args){
         if (args.length < command.getArgumentNumber()){
             return false;
         }
