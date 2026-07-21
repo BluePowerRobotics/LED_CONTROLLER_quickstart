@@ -160,7 +160,7 @@ public class LEDController {
             }
 
             /**
-             * @param portLedNum 7 port, max 255 each, max 448 in total, setting to 0 means to disable this port
+             * @param portLedNum 7 port, max 255 each, max 336 in total, setting to 0 means to disable this port
              */
             public LEDControllerSettingsBuilder setPortLedNum(int... portLedNum) {
                 int[] rPLN= new int[portLedNum.length];
@@ -173,7 +173,7 @@ public class LEDController {
 
             /**
              * @param portIndex 0~6
-             * @param ledNum  max 255, max 448 in all ports, setting to 0 means to disable this port
+             * @param ledNum  max 255, max 336 in all ports, setting to 0 means to disable this port
              */
             public LEDControllerSettingsBuilder setPortLedNum(int portIndex, int ledNum) {
                 if (portIndex >= 0 && portIndex < this.portLedNum.length) {
