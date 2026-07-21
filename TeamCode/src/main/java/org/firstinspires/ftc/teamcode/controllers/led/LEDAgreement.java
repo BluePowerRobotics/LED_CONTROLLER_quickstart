@@ -21,7 +21,7 @@ public class LEDAgreement extends SimpleUartAgreement {
             Map.entry("PORT_LED_NUMBER",7),
             Map.entry("LED_RGB",5)
     );
-    public static int TIMEOUT_MS = 100;
+    public static int TIMEOUT_MS = 1000;
 
     /**
      * Note that the path of the same device on the same port changes each time you plug it.

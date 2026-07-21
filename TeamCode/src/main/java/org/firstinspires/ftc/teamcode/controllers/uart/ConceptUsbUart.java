@@ -66,7 +66,7 @@ public class ConceptUsbUart extends LinearOpMode {
                     }
                 }
 
-                if (gamepad1.y && !deviceList.isEmpty()) {
+                if ((gamepad1.y||opModeIsActive()) && !deviceList.isEmpty()) {
                     UsbDevice selectedDevice = deviceList.get(selectedIndex);
                     usbUart = new UsbUart(selectedDevice.getDeviceName(), serialNumber);
                     UsbUart.SerialParameters params = usbUart.getSerialParametersBuilder()

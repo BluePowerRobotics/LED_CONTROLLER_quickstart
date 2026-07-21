@@ -53,7 +53,7 @@ public class LEDController {
     public LEDController(){
         this.ledAgreement = new LEDAgreement();
         LEDControllerSettings.LEDControllerSettingsBuilder builder = LEDControllerSettings.getLEDControllerSettingsBuilder();
-        if(ledAgreement.askForSettingValue("GLOBAL_BRIGHTNESS")!=null){
+        if(!ledAgreement.askForSettingValue("GLOBAL_BRIGHTNESS").isEmpty()){
             int brightness = 0;
             try{
                 brightness = Integer.parseInt(ledAgreement.getReceivedValue("GLOBAL_BRIGHTNESS").get(0),16);
@@ -63,7 +63,7 @@ public class LEDController {
                 RobotLog.addGlobalWarningMessage(e.getMessage());
             }
         }
-        if(ledAgreement.askForSettingValue("PORT_LED_NUMBER")!=null){
+        if(!ledAgreement.askForSettingValue("PORT_LED_NUMBER").isEmpty()){
             int[] pln = new int[7];
             try{
                 for(int i = 0;i< pln.length;i++){
@@ -102,6 +102,60 @@ public class LEDController {
         }
         startUpdating();
     }
+    public LEDController(String deviceName, LEDControllerSettings ledControllerSettings){
+        this.ledControllerSettings = ledControllerSettings;
+        ledAgreement = new LEDAgreement(deviceName);
+        applySettings(this.ledControllerSettings);
+        for(int i = 0;i<ledControllerSettings.getPortLedNum().length;i++) {
+            ledDrawers[i] = new LEDDrawer(ledControllerSettings.getPortLedNum()[i]);
+            ledDrawers[i].update(RevBlinkinLedDriver.BlinkinPattern.BLACK,getAd1(),getAd2(), (int) (ledControllerSettings.getGlobalBrightness()*255));
+            currentPatterns[i] = RevBlinkinLedDriver.BlinkinPattern.BLACK;
+            lockFlags[i]=new boolean[ledControllerSettings.getPortLedNum()[i]];
+            Arrays.fill(lockFlags[i], false);
+            colors[i]=new Color[ledControllerSettings.getPortLedNum()[i]];
+            Arrays.fill(colors[i],Color.valueOf(Color.BLACK));
+        }
+        startUpdating();
+    }
+    public LEDController(String deviceName){
+        this.ledAgreement = new LEDAgreement(deviceName);
+        LEDControllerSettings.LEDControllerSettingsBuilder builder = LEDControllerSettings.getLEDControllerSettingsBuilder();
+        if(!ledAgreement.askForSettingValue("GLOBAL_BRIGHTNESS").isEmpty()){
+            int brightness = 0;
+            try{
+                brightness = Integer.parseInt(ledAgreement.getReceivedValue("GLOBAL_BRIGHTNESS").get(0),16);
+                builder.setGlobalBrightness(brightness/255.0);
+
+            } catch (NumberFormatException e) {
+                RobotLog.addGlobalWarningMessage(e.getMessage());
+            }
+        }
+        if(!ledAgreement.askForSettingValue("PORT_LED_NUMBER").isEmpty()){
+            int[] pln = new int[7];
+            try{
+                for(int i = 0;i< pln.length;i++){
+                    pln[i] = Integer.parseInt(ledAgreement.getReceivedValue("PORT_LED_NUMBER").get(i),16);
+                }
+                builder.setPortLedNum(pln);
+
+            } catch (NumberFormatException e) {
+                RobotLog.addGlobalWarningMessage(e.getMessage());
+            }
+        }
+        ledControllerSettings = builder.build();
+        for(int i = 0;i<ledControllerSettings.getPortLedNum().length;i++) {
+            ledDrawers[i] = new LEDDrawer(ledControllerSettings.getPortLedNum()[i]);
+            ledDrawers[i].update(RevBlinkinLedDriver.BlinkinPattern.BLACK,getAd1(),getAd2(), (int) (ledControllerSettings.getGlobalBrightness()*255));
+            currentPatterns[i] = RevBlinkinLedDriver.BlinkinPattern.BLACK;
+            lockFlags[i]=new boolean[ledControllerSettings.getPortLedNum()[i]];
+            Arrays.fill(lockFlags[i], false);
+            colors[i]=new Color[ledControllerSettings.getPortLedNum()[i]];
+            Arrays.fill(colors[i],Color.valueOf(Color.BLACK));
+        }
+        startUpdating();
+    }
+
+
     public static class LEDControllerSettings{
         private byte globalBrightness  = 0;
         private byte[] portLedNum = {-64,-64,-64,-64,-64,-64,-64};
