@@ -324,7 +324,7 @@ public class LEDController {
         return ledAgreement.sendCommand(
                 LEDAgreement.LEDCommand.getLEDCommand(LEDAgreement.LEDCommand.LEDCommandList.SET_SINGLE_RGB),
                 port,
-                index,
+                String.format("%02x", index),
                 String.format("%02x", r),
                 String.format("%02x", g),
                 String.format("%02x", b)
@@ -347,8 +347,8 @@ public class LEDController {
         return ledAgreement.sendCommand(
                 LEDAgreement.LEDCommand.getLEDCommand(LEDAgreement.LEDCommand.LEDCommandList.SET_RANGE_RGB),
                 port,
-                first,
-                last,
+                String.format("%02x", first),
+                String.format("%02x", last),
                 String.format("%02x", r),
                 String.format("%02x", g),
                 String.format("%02x", b)
